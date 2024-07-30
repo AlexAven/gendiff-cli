@@ -24,14 +24,7 @@ program
     const file1Parsed = fileParse(file1Content);
     const file2Parsed = fileParse(file2Content);
 
-    // console.log(absolutePath1);
-    // console.log(absolutePath2);
-    // console.log(file1Content);
-    // console.log(file2Content);
-    // console.log(file1Parsed);
-    // console.log(file2Parsed);
     console.log(genDiff(file1Parsed, file2Parsed));
-    // return genDiff(file1Parsed, file2Parsed);
   });
 
 program.parse(process.argv);
