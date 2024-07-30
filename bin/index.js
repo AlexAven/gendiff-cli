@@ -24,7 +24,7 @@ program
     const file1Parsed = fileParse(file1Content);
     const file2Parsed = fileParse(file2Content);
 
-    console.log(genDiff(file1Parsed, file2Parsed));
+    console.log(genDiff(file1Parsed, file2Parsed).split('\n'));
   });
 
 program.parse(process.argv);
