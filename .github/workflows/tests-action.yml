@@ -1,12 +1,19 @@
 name: tests-action
+
 on: 
   push:
+
 jobs: 
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - run: make install
       - run: make test
       - run: make lint
+      - name: Report coverage to Code Climate
+        env:
+          CODE_CLIMATE_KEY: ${{ secrets.CODE_CLIMATE_KEY }}
+        run: npm run report-coverage
