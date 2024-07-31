@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import * as path from 'node:path';
 import { cwd } from 'node:process';
 import { readFileSync } from 'node:fs';
-import fileParse from '../src/fileParse.js';
+import { jsonParse } from '../src/parsers.js';
 import genDiff from '../src/genDiff.js';
 
 const program = new Command();
@@ -21,10 +21,10 @@ program
     const file1Content = readFileSync(absolutePath1, 'utf8');
     const file2Content = readFileSync(absolutePath2, 'utf8');
 
-    const file1Parsed = fileParse(file1Content);
-    const file2Parsed = fileParse(file2Content);
+    const file1Parsed = jsonParse(file1Content);
+    const file2Parsed = jsonParse(file2Content);
 
-    console.log(genDiff(file1Parsed, file2Parsed).split('\n'));
+    console.log(genDiff(file1Parsed, file2Parsed));
   });
 
 program.parse(process.argv);

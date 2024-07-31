@@ -15,6 +15,15 @@ test('genDiff', () => {
     5: 'six',
   };
 
+  const obj3 = {
+    one: 'one',
+  };
+  const obj4 = {
+    one: 'one',
+    two: 'two',
+  };
+
   expect(JSON.stringify(genDiff(obj1, obj2))).toEqual('"{\\n    1: one\\n    2: two\\n  - 3: three\\n  + 3: five\\n  + 4: four\\n  + 5: six\\n  - 6: six\\n}"');
+  expect(JSON.stringify(genDiff(obj3, obj4))).toEqual('"{\\n    one: one\\n  + two: two\\n}"');
   expect(genDiff(obj1, obj2).split('\n')).toHaveLength(9);
 });

@@ -8,7 +8,7 @@ publish: # publishing package to NPM in a test-mode
 	npm publish --dry-run
 
 test: # making a test coverage check
-	npm test
+	npm test -- --coverage
 
 lint: # making a eslint code-check according Airbnb Style Guide
 	npx eslint . 

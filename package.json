@@ -10,7 +10,7 @@
   "author": "Alexander Kazakov",
   "license": "ISC",
   "bin": {
-    "gendiff": "bin/index.js"
+    "gendiff": "bin/gendiff.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.7.0",
