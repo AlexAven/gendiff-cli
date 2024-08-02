@@ -1,5 +1,11 @@
-const jsonParse = (file) => JSON.parse(file);
+import yaml from 'js-yaml';
 
-const ymlParse = (file) => {};
+const parsers = {
+  json: JSON.parse,
+  yml: yaml.load,
+  yaml: yaml.load,
+};
 
-export { jsonParse, ymlParse };
+const getParser = (extname, file) => parsers[extname](file);
+
+export default getParser;

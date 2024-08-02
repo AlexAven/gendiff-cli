@@ -1,29 +1,22 @@
+import * as path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { cwd } from 'node:process';
+import yaml from 'js-yaml';
 import genDiff from '../src/genDiff.js';
 
 test('genDiff', () => {
-  const obj1 = {
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    6: 'six',
-  };
-  const obj2 = {
-    1: 'one',
-    2: 'two',
-    3: 'five',
-    4: 'four',
-    5: 'six',
-  };
+  const jsonFile1 = JSON.parse(readFileSync(path.resolve(cwd(), './__fixtures__/file1.json'), 'utf8'));
+  const jsonFile2 = JSON.parse(readFileSync(path.resolve(cwd(), './__fixtures__/file2.json'), 'utf8'));
 
-  const obj3 = {
-    one: 'one',
-  };
-  const obj4 = {
-    one: 'one',
-    two: 'two',
-  };
+  const ymlFile1 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file1.yml'), 'utf8'));
+  const ymlFile2 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file2.yml'), 'utf8'));
 
-  expect(JSON.stringify(genDiff(obj1, obj2))).toEqual('"{\\n    1: one\\n    2: two\\n  - 3: three\\n  + 3: five\\n  + 4: four\\n  + 5: six\\n  - 6: six\\n}"');
-  expect(JSON.stringify(genDiff(obj3, obj4))).toEqual('"{\\n    one: one\\n  + two: two\\n}"');
-  expect(genDiff(obj1, obj2).split('\n')).toHaveLength(9);
+  const yamlFile1 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file1.yaml'), 'utf8'));
+  const yamlFile2 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file2.yaml'), 'utf8'));
+
+  const resultExpected = readFileSync(path.resolve(cwd(), './__fixtures__/diffResult'), 'utf8');
+
+  expect(genDiff(jsonFile1, jsonFile2)).toEqual(resultExpected);
+  expect(genDiff(ymlFile1, ymlFile2)).toEqual(resultExpected);
+  expect(genDiff(yamlFile1, yamlFile2)).toEqual(resultExpected);
 });
