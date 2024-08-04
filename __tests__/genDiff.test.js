@@ -1,22 +1,48 @@
-import * as path from 'node:path';
-import { readFileSync } from 'node:fs';
-import { cwd } from 'node:process';
-import yaml from 'js-yaml';
+import { readFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import genDiff from '../src/genDiff.js';
+import getParser from '../src/parsers.js';
+import stylish from '../src/formatters/stylish.js';
 
-test('genDiff', () => {
-  const jsonFile1 = JSON.parse(readFileSync(path.resolve(cwd(), './__fixtures__/file1.json'), 'utf8'));
-  const jsonFile2 = JSON.parse(readFileSync(path.resolve(cwd(), './__fixtures__/file2.json'), 'utf8'));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  const ymlFile1 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file1.yml'), 'utf8'));
-  const ymlFile2 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file2.yml'), 'utf8'));
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const readFixtureFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 
-  const yamlFile1 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file1.yaml'), 'utf8'));
-  const yamlFile2 = yaml.load(readFileSync(path.resolve(cwd(), './__fixtures__/file2.yaml'), 'utf8'));
+const jsonInput1 = getParser('json', readFixtureFile('file3.json'));
+const jsonInput2 = getParser('json', readFixtureFile('file4.json'));
+const yamlInput1 = getParser('yaml', readFixtureFile('file3.yaml'));
+const yamlInput2 = getParser('yaml', readFixtureFile('file4.yaml'));
+const ymlInput1 = getParser('yaml', readFixtureFile('file3.yml'));
+const ymlInput2 = getParser('yaml', readFixtureFile('file4.yml'));
+const jsonInput3 = getParser('json', readFixtureFile('file5.json'));
+const jsonInput4 = getParser('json', readFixtureFile('file6.json'));
+const yamlInput3 = getParser('yaml', readFixtureFile('file5.yaml'));
+const yamlInput4 = getParser('yaml', readFixtureFile('file6.yaml'));
 
-  const resultExpected = readFileSync(path.resolve(cwd(), './__fixtures__/diffResult'), 'utf8');
+const expectedOutput = readFixtureFile('expectedOutput.txt');
+const expectedAdditional = readFixtureFile('expectedAdditional.txt');
 
-  expect(genDiff(jsonFile1, jsonFile2)).toEqual(resultExpected);
-  expect(genDiff(ymlFile1, ymlFile2)).toEqual(resultExpected);
-  expect(genDiff(yamlFile1, yamlFile2)).toEqual(resultExpected);
+describe('genDiff with JSON, YML, YAML', () => {
+  test('genDiff for objects in JSON', () => {
+    expect(stylish(genDiff(jsonInput1, jsonInput2))).toBe(expectedOutput);
+  });
+
+  test('genDiff for objects in YAML', () => {
+    expect(stylish(genDiff(yamlInput1, yamlInput2))).toBe(expectedOutput);
+  });
+
+  test('genDiff for objects in YML', () => {
+    expect(stylish(genDiff(ymlInput1, ymlInput2))).toBe(expectedOutput);
+  });
+
+  test('genDiff additional test for objects in JSON', () => {
+    expect(stylish(genDiff(jsonInput3, jsonInput4))).toBe(expectedAdditional);
+  });
+
+  test('genDiff additional test for objects in YAML', () => {
+    expect(stylish(genDiff(yamlInput3, yamlInput4))).toBe(expectedAdditional);
+  });
 });

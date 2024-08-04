@@ -1,28 +1,48 @@
 import _ from 'lodash';
 
-const genDiff = (file1, file2) => {
-  const file1KeysList = Object.keys(file1);
-  const file2KeysList = Object.keys(file2);
-  const summaryKeysList = _.sortBy(_.union(file1KeysList, file2KeysList));
-
-  const fileDifferences = summaryKeysList.reduce((acc, key) => {
-    if (Object.hasOwn(file1, key) && Object.hasOwn(file2, key)) {
-      if (file1[key] === file2[key]) {
-        acc.push(`    ${key}: ${file1[key]}`);
-      } else {
-        acc.push(`  - ${key}: ${file1[key]}`);
-        acc.push(`  + ${key}: ${file2[key]}`);
-      }
-    } else if (key in file1) {
-      acc.push(`  - ${key}: ${file1[key]}`);
-    } else if (key in file2) {
-      acc.push(`  + ${key}: ${file2[key]}`);
+const genDiff = (obj1, obj2) => {
+  const formatValue = (value, depth) => {
+    if (_.isObject(value)) {
+      const indentSize = depth * 4;
+      const currentIndent = ' '.repeat(indentSize);
+      const bracketIndent = ' '.repeat(indentSize - 4);
+      const entries = Object.entries(value);
+      const formattedEntries = entries.map(([key, val]) => `${currentIndent}${key}: ${formatValue(val, depth + 1)}`);
+      return `{\n${formattedEntries.join('\n')}\n${bracketIndent}}`;
     }
+    return value;
+  };
 
-    return acc;
-  }, []);
+  const iter = (currentValue1, currentValue2, depth) => {
+    const keys = _.union(Object.keys(currentValue1), Object.keys(currentValue2));
+    const sortedKeys = _.sortBy(keys);
 
-  return `{\n${fileDifferences.join('\n')}\n}`;
+    const indentSize = depth * 4;
+    const currentIndent = ' '.repeat(indentSize);
+    const bracketIndent = ' '.repeat(indentSize - 4);
+    const reducedIndent = ' '.repeat(indentSize - 2);
+
+    const result = sortedKeys.map((key) => {
+      if (!Object.hasOwn(currentValue2, key)) {
+        return `${reducedIndent}- ${key}: ${formatValue(currentValue1[key], depth + 1)}`;
+      }
+      if (!Object.hasOwn(currentValue1, key)) {
+        return `${reducedIndent}+ ${key}: ${formatValue(currentValue2[key], depth + 1)}`;
+      }
+      if (_.isObject(currentValue1[key]) && _.isObject(currentValue2[key])) {
+        return `${currentIndent} ${key}: ${iter(currentValue1[key], currentValue2[key], depth + 1)}`;
+      }
+      if (currentValue1[key] !== currentValue2[key]) {
+        return `${reducedIndent}- ${key}: ${formatValue(currentValue1[key], depth + 1)}\n${reducedIndent}+ ${key}: ${formatValue(currentValue2[key], depth + 1)}`;
+      }
+      return `${currentIndent}${key}: ${formatValue(currentValue1[key], depth + 1)}`;
+    });
+
+    return `{\n${result.join('\n')}\n${bracketIndent}}`;
+  };
+
+  const depth = 1;
+  return `\n${iter(obj1, obj2, depth)}`;
 };
 
 export default genDiff;

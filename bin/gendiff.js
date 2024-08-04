@@ -5,6 +5,7 @@ import { cwd } from 'node:process';
 import { readFileSync } from 'node:fs';
 import getParser from '../src/parsers.js';
 import genDiff from '../src/genDiff.js';
+import stylish from '../src/formatters/stylish.js';
 
 const program = new Command();
 
@@ -13,8 +14,8 @@ program
   .description('Compares two configuration files and shows a difference.')
   .version('1.0.0')
   .arguments('<filepath1> <filepath2>')
-  .option('-f, --format [type]', 'output format')
-  .action((filepath1, filepath2) => {
+  .option('-f, --format [type]', 'output format', 'stylish')
+  .action((filepath1, filepath2, options) => {
     const absolutePath1 = path.resolve(cwd(), filepath1);
     const absolutePath2 = path.resolve(cwd(), filepath2);
 
@@ -27,7 +28,10 @@ program
     const file1Parsed = getParser(file1ExtensionName, file1Content);
     const file2Parsed = getParser(file2ExtensionName, file2Content);
 
-    console.log(genDiff(file1Parsed, file2Parsed));
+    const diff = genDiff(file1Parsed, file2Parsed);
+    const format = options.format === 'stylish' ? stylish : stylish;
+
+    console.log(format(diff));
   });
 
 program.parse(process.argv);
