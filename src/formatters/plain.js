@@ -12,26 +12,35 @@ const formatValue = (value) => {
 };
 
 const renderPlain = (content) => {
-  const iter = (node, ancestry) => {
-    const nestedPath = [...ancestry, node.key];
-    const path = nestedPath.join('.');
-    if (node.state === 'added') {
-      return `Property '${path}' was added with value: ${formatValue(node.value)}`;
-    }
-    if (node.state === 'deleted') {
-      return `Property '${path}' was removed`;
-    }
-    if (node.state === 'changed') {
-      return `Property '${path}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`;
-    }
-    if (node.state === 'unchanged') {
-      return [];
-    }
-    return node.children.flatMap((children) => iter(children, nestedPath));
+  const iter = (nodes, ancestry) => {
+    const result = [];
+
+    nodes.forEach((node) => {
+      const nestedPath = [...ancestry, node.key];
+      const path = nestedPath.join('.');
+
+      switch (node.state) {
+        case 'added':
+          result.push(`Property '${path}' was added with value: ${formatValue(node.value)}`);
+          break;
+        case 'deleted':
+          result.push(`Property '${path}' was removed`);
+          break;
+        case 'changed':
+          result.push(`Property '${path}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`);
+          break;
+        case 'unchanged':
+          break;
+        default:
+          result.push(...iter(node.children, nestedPath));
+          break;
+      }
+    });
+
+    return result;
   };
-  return content
-    .flatMap((node) => iter(node, []))
-    .join('\n');
+
+  return iter(content, []).join('\n');
 };
 
 export default renderPlain;
