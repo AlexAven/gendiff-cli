@@ -1,14 +1,12 @@
-install: # perfoming a clean intallation of dependencies
+install:
 	npm ci
-
-gendiff: # running the program
-	node bin/gendiff.js
-
-publish: # publishing package to NPM in a test-mode
+gendiff:
+	node bin/gendiff
+publish:
 	npm publish --dry-run
-
-test: # making a test coverage check
+lint:
+	npx eslint .
+test:
 	npx jest
-
-lint: # making a eslint code-check according Airbnb Style Guide
-	npx eslint . 
+test-coverage:
+	npm test -- --coverage --coverageProvider=v8
