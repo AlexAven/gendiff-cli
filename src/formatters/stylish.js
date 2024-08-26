@@ -44,10 +44,11 @@ const iter = (node, depth) => {
       return renderNode(node, depth);
     case 'changed':
       return renderChangedNode(node, depth);
-    default:
+    default: {
       const indent = makeIndent(depth);
       const innerTree = node.children.flatMap((child) => iter(child, depth + 1)).join('\n');
       return `${indent}${node.key}: {\n${innerTree}\n${indent}}`;
+    }
   }
 };
 
