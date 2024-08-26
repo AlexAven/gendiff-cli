@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
-import parse from './parsers/parsers.js';
-import buildDiff from './compare.js';
-import format from './formatters/index.js';
+import parse from './parsers/parsers.js'; // eslint-disable-line
+import buildDiff from './compare.js'; // eslint-disable-line
+import format from './formatters/index.js'; // eslint-disable-line
 
 const gendiff = (firstPath, secondPath, formatName = 'stylish') => {
   const firstFilePath = path.resolve(process.cwd(), firstPath);

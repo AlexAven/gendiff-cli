@@ -1,5 +1,5 @@
-import stylish from './stylish.js';
-import plain from './plain.js';
+import stylish from './stylish.js'; // eslint-disable-line
+import plain from './plain.js'; // eslint-disable-line
 
 const formatter = (result, format) => {
   switch (format) {
