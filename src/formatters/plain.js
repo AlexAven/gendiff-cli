@@ -12,32 +12,24 @@ const formatValue = (value) => {
 };
 
 const renderPlain = (content) => {
-  const iter = (nodes, ancestry) => {
-    const result = [];
-
-    nodes.forEach((node) => {
+  const iter = (nodes, ancestry) => { // eslint-disable-line
+    return nodes.reduce((acc, node) => {
       const nestedPath = [...ancestry, node.key];
       const path = nestedPath.join('.');
 
       switch (node.state) {
         case 'added':
-          result.push(`Property '${path}' was added with value: ${formatValue(node.value)}`);
-          break;
+          return acc.concat(`Property '${path}' was added with value: ${formatValue(node.value)}`);
         case 'deleted':
-          result.push(`Property '${path}' was removed`);
-          break;
+          return acc.concat(`Property '${path}' was removed`);
         case 'changed':
-          result.push(`Property '${path}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`);
-          break;
+          return acc.concat(`Property '${path}' was updated. From ${formatValue(node.oldValue)} to ${formatValue(node.newValue)}`);
         case 'unchanged':
-          break;
+          return acc;
         default:
-          result.push(...iter(node.children, nestedPath));
-          break;
+          return acc.concat(iter(node.children, nestedPath));
       }
-    });
-
-    return result;
+    }, []);
   };
 
   return iter(content, []).join('\n');

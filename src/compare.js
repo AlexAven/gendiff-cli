@@ -1,8 +1,9 @@
 import _ from 'lodash';
 
 const buildDiff = (obj1, obj2) => {
-  const keys = _.union(Object.keys(obj1), Object.keys(obj2)).sort();
-  const ast = keys.map((key) => getKeyState(obj1, obj2, key)); // eslint-disable-line
+  const keys = _.union(Object.keys(obj1), Object.keys(obj2));
+  const sortedKeys = _.sortBy(keys);
+  const ast = sortedKeys.map((key) => getKeyState(obj1, obj2, key)); // eslint-disable-line
   return ast;
 };
 
